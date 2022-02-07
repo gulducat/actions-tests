@@ -9,5 +9,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v1
-    - name: say hello
-      run: echo hello
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.17'
+    - run: go version
