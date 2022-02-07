@@ -14,7 +14,7 @@ jobs:
         go-version: '^1.17'
     - name: install softwares
       run: |
-        go install github.com/gulducat/hashi-bin@latest
+        go install github.com/gulducat/hashi-bin@6d44eec
         hashi-bin download consul latest
         ./consul version
         hashi-bin download nomad latest
