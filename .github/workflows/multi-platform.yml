@@ -12,4 +12,12 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.17'
-    - run: go version
+    - name: install softwares
+      run: |
+        go install github.com/gulducat/hashi-bin@latest
+        hashi-bin download consul latest
+        ./consul version
+        hashi-bin download nomad latest
+        ./nomad version
+        hashi-bin download vault latest
+        ./vault version
