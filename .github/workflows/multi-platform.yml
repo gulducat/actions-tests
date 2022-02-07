@@ -21,3 +21,5 @@ jobs:
         ./nomad version
         hashi-bin download vault latest
         ./vault version
+    - name: run test
+      run: go run main.go
