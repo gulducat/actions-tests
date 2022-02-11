@@ -14,18 +14,18 @@ func main() {
 	// run programs in the background
 	ctx, stop := context.WithCancel(context.Background())
 	defer stop()
-	go exec.CommandContext(ctx, "./consul", "agent", "-dev").Run()
-	go exec.CommandContext(ctx, "./nomad", "agent", "-dev").Run()
-	go exec.CommandContext(ctx, "./vault", "server", "-dev").Run()
+	go exec.CommandContext(ctx, "consul", "agent", "-dev").Run()
+	go exec.CommandContext(ctx, "nomad", "agent", "-dev").Run()
+	go exec.CommandContext(ctx, "vault", "server", "-dev").Run()
 	// lazy sleep for programs to start, might not be long enough for nomad..
 	time.Sleep(time.Second * 8)
 
 	// test em out
 	exitCode := 0
 	for _, c := range [][]string{
-		{"./consul", "members"},
-		{"./nomad", "node", "status"},
-		{"./vault", "status"},
+		{"consul", "members"},
+		{"nomad", "node", "status"},
+		{"vault", "status"},
 	} {
 		fmt.Println("running", c)
 		bts, err := exec.Command(c[0], c[1:]...).CombinedOutput()
