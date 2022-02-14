@@ -36,4 +36,4 @@ jobs:
         nomad version
         vault version
     - name: run test
-      run: go run main.go
+      run: go test -v . -tags=functional
