@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"path"
 	"testing"
 	"time"
 )
@@ -50,20 +51,21 @@ func TestFunctional(t *testing.T) {
 	runPrograms(t, programs...)
 
 	t.Run("all", func(t *testing.T) {
-		out := runBinary(t, "-all")
+		out := runBinary(t, "all")
 		pretendToTest(t, out)
 	})
 
 	for _, p := range programs {
 		t.Run(p.Name, func(t *testing.T) {
-			out := runBinary(t, "-"+p.Name)
+			out := runBinary(t, p.Name)
 			p.Test(t, out)
 		})
 	}
 }
 
-func testBuild(t *testing.T) {
-	bts, err := exec.Command("go", "build", "-o=main-test", ".").CombinedOutput()
+func testBuild(t *testing.T) { // make this a pre-test step?
+	out := path.Join("bin", "main-test")
+	bts, err := exec.Command("go", "build", "-o", out, ".").CombinedOutput()
 	if err != nil {
 		t.Fatalf("%s: %s", err, string(bts))
 	}
@@ -109,7 +111,7 @@ func runPrograms(t *testing.T, programs ...testProgram) {
 
 func runBinary(t *testing.T, args ...string) string {
 	t.Log("running main-test with args:", args)
-	bts, err := exec.Command("./main-test", args...).CombinedOutput()
+	bts, err := exec.Command("main-test", args...).CombinedOutput()
 	if err != nil {
 		t.Fatalf("error running main-test: %s: %s", err, string(bts))
 		return ""
