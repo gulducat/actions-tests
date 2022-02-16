@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
-	"path"
 	"testing"
 	"time"
 )
@@ -23,8 +22,6 @@ func (tp testProgram) String() string {
 }
 
 func TestFunctional(t *testing.T) {
-	testBuild(t) // build a test binary for this platform
-
 	t.Setenv("VAULT_ADDR", "http://127.0.0.1:8200") // default is https, and -dev doesn't do tls
 
 	// programs to run for us to test against
@@ -61,15 +58,6 @@ func TestFunctional(t *testing.T) {
 			p.Test(t, out)
 		})
 	}
-}
-
-func testBuild(t *testing.T) { // make this a pre-test step?
-	out := path.Join("bin", "main-test")
-	bts, err := exec.Command("go", "build", "-o", out, ".").CombinedOutput()
-	if err != nil {
-		t.Fatalf("%s: %s", err, string(bts))
-	}
-	fmt.Println(string(bts))
 }
 
 func runWithContext(ctx context.Context, stop context.CancelFunc, command ...string) {
@@ -110,10 +98,10 @@ func runPrograms(t *testing.T, programs ...testProgram) {
 }
 
 func runBinary(t *testing.T, args ...string) string {
-	t.Log("running main-test with args:", args)
-	bts, err := exec.Command("main-test", args...).CombinedOutput()
+	t.Log("running actions-tests with args:", args)
+	bts, err := exec.Command("actions-tests", args...).CombinedOutput()
 	if err != nil {
-		t.Fatalf("error running main-test: %s: %s", err, string(bts))
+		t.Fatalf("error running actions-tests: %s: %s", err, string(bts))
 		return ""
 	}
 	return string(bts)

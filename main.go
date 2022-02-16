@@ -8,27 +8,25 @@ import (
 
 func main() {
 	fmt.Println("Hi there:", os.Args)
+	cmd := os.Args[1]
 	cmdMap := map[string][]string{
-		"consul": []string{"members"},
-		"nomad":  []string{"node", "status"},
-		"vault":  []string{"status"},
+		"consul": {"members"},
+		"nomad":  {"node", "status"},
+		"vault":  {"status"},
 	}
-	p := os.Args[1]
-	if p == "all" {
-		for c, args := range cmdMap {
+	for c, args := range cmdMap {
+		if c == cmd || cmd == "all" {
 			runCommand(c, args...)
 		}
-	} else {
-		runCommand(p, cmdMap[p]...)
 	}
 }
 
 func runCommand(c string, args ...string) {
 	bts, err := exec.Command(c, args...).CombinedOutput()
 	if err != nil {
-		fmt.Println("eeeee:", err)
+		fmt.Println(c, "eeeee:", err)
 	}
-	fmt.Println("output:", string(bts))
+	fmt.Println(string(bts))
 }
 
 //func mainBlah() {
