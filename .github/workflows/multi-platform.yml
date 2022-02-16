@@ -22,6 +22,8 @@ jobs:
       run: |
         mkdir bin
         go build -o bin
+    - name: run integration test
+      run: go test -v . -tags=integration
     - name: install softwares
       run: |
         go install github.com/gulducat/hashi-bin@6d44eec
