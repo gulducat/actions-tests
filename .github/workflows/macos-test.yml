@@ -1,0 +1,23 @@
+name: macos-test
+on:
+  push:
+    branches: [macos-hanging-checkout]
+
+env:
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
+
+jobs:
+  macos-test:
+    timeout-minutes: 5 # prevent it hanging ~indefinitely
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-11]
+        do-conf: [true, false]
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Configure Git
+        run: git config --global url.'https://${{ github.token }}:@github.com'.insteadOf 'https://github.com'
+        if: ${{matrix.do-conf}}
+      - uses: actions/checkout@v3
