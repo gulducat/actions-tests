@@ -18,6 +18,8 @@ jobs:
     runs-on: ${{matrix.os}}
     steps:
       - name: Configure Git
-        run: git config --global url.'https://${{ github.token }}:@github.com'.insteadOf 'https://github.com'
+        # HEY!  THERE WAS A ":" IN THERE
+        #run: git config --global url.'https://${{ github.token }}:@github.com'.insteadOf 'https://github.com'
+        run: git config --global url.'https://${{ github.token }}@github.com'.insteadOf 'https://github.com'
         if: ${{matrix.do-conf}}
       - uses: actions/checkout@v3
