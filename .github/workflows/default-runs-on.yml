@@ -1,0 +1,42 @@
+# this provides standard runs-on that varies between oss and ent,
+# because simple inline conditionals, e.g.
+# ${{ condition && ['some', 'list'] || ['another', 'list'] }}
+# does not work with list values, only strings.
+#
+# usage:
+# jobs:
+#   get-runs-on:
+#     uses: ./.github/workflows/default-runs-on.yml
+#   your-job:
+#     needs: get-runs-on
+#     runs-on: ${{ fromJSON(needs.get-runs-on.outputs.runs-on) }}
+#     steps: ...
+
+on:
+  workflow_call:
+    outputs:
+      runs-on:
+        value: ${{ jobs.runs-on-tags.outputs.runs-on }}
+
+env:
+  #repo: ${{ github.repository }}
+  repo: actions-tests-enterprise
+  #ent: '["self-hosted", "on-demand", "os=linux"]'
+  ent: '["ubuntu-20.04"]'
+  oss: '["ubuntu-latest"]'
+
+jobs:
+  runs-on-tags:
+    runs-on: ubuntu-latest
+    outputs:
+      runs-on: ${{ steps.repo.outputs.runs-on }}
+    steps:
+      - id: repo
+        run: |-
+          tags='${{ env.oss }}'
+          if [[ "${{ env.repo }}" =~ "-enterprise" ]]; then
+            tags='${{ env.ent }}'
+          fi
+          echo "result: $tags"
+          echo "runs-on=$tags" >> "$GITHUB_OUTPUT"
+

@@ -1,0 +1,16 @@
+on:
+  push:
+
+jobs:
+  runs-on-setup:
+    uses: ./.github/workflows/default-runs-on.yml
+
+  too-cool:
+    needs: runs-on-setup
+    runs-on: ${{ fromJSON(needs.runs-on-setup.outputs.runs-on) }}
+    #runs-on: ubuntu-latest
+    steps:
+      - name: wow
+        run: |-
+          echo "wowwee ${{ needs.runs-on-setup.outputs.runs-on }}"
+
