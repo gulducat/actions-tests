@@ -1,0 +1,12 @@
+on:
+  push:
+    branches: [docker-cache]
+
+jobs:
+  docker-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.2.1
+      - name: run test script
+        run: ./test-docker-cache.sh
