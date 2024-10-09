@@ -18,5 +18,6 @@ docker buildx build \
   --cache-from type=gha --cache-to type=gha \
   -f Dockerfile.rpm -t centos:test-local .
 
-docker run -t ubuntu:test-local echo hi ubuntu
-docker run -t centos:test-local echo hi centos
+#docker run -t ubuntu:test-local echo hi ubuntu
+#docker run -t centos:test-local echo hi centos
+docker image list
