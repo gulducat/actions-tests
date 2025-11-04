@@ -1,0 +1,20 @@
+# pretend this job is on another repo (otherwise we could just do workflow_call)
+name: sleepy
+
+on:
+  workflow_dispatch:
+    inputs:
+      should_fail:
+        required: true
+        type: boolean
+
+jobs:
+  sleepy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: sleep
+        run: sleep 120
+      - name: maybe fail
+        if: ${{ inputs.should_fail }}
+        run: exit 1
+

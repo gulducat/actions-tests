@@ -1,0 +1,31 @@
+name: coordinate
+
+on:
+  push:
+    branches: [cross-dispatch]
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dispatch success
+        run: echo pretend we ran something
+      #- name: dispatch success
+      #  uses: ./.github/workflows/sleepy.yaml # local
+      #  with:
+      #    should_fail: false
+      #- name: dispatch fail
+      #  uses: actions/workflow_dispatch@main
+      #  with:
+      #    should_fail: true
+  call-remote-success:
+    needs: [dispatch]
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
+    with:
+      should_fail: false
+  call-remote-fail:
+    needs: [dispatch]
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
+    with:
+      should_fail: true
