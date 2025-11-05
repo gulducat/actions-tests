@@ -49,12 +49,15 @@ jobs:
           done
           gh run watch --exit-status --compact $run_id
 
-  #call-remote-success:
-  #  uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
-  #  with:
-  #    should_fail: false
-  #call-remote-fail:
-  #  needs: [call-remote-success]
-  #  uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
-  #  with:
-  #    should_fail: true
+  call-remote-success:
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
+    with:
+      repo: gulducat/actions-tests-public
+      should_fail: false
+  call-remote-fail:
+    needs: [call-remote-success]
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
+    with:
+      repo: gulducat/actions-tests-public
+      should_fail: true
+
