@@ -19,7 +19,13 @@ on:
         required: false
 
 jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hi
+
   call-remote-main:
+    needs: [start]
     if: ${{ inputs.latest_version != '' }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     with:
@@ -28,10 +34,13 @@ jobs:
       dest_branch: release/${{ inputs.latest_version != '' }}
 
   call-remote-backports:
-    needs: [call-remote-main]
+    needs: [start]
     strategy:
       matrix:
-        version: [inputs.backport_1, inputs.backport_2, inputs.backport_3]
+        version:
+          - ${{ inputs.backport_1 }}
+          - ${{ inputs.backport_2 }}
+          - ${{ inputs.backport_3 }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
     with:
       repo: gulducat/actions-tests-public
