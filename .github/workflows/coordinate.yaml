@@ -39,47 +39,47 @@ jobs:
       source_branch: release/${{ matrix.version }}
       dest_branch: release/${{ matrix.version }}
 
-  dispatch:
-    needs: [call-remote-backports]
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
-      # https://cli.github.com/manual/gh_help_environment
-      GH_REPO: gulducat/actions-tests-public
-    steps:
-      #- name: make an id
-      #  id: my-id
-      #  run: echo "id=$(date --utc +%s)" >> $GITHUB_OUTPUTS
-      - name: dispatch success
-        run: |-
-          set -x
-          this_id=$(date --utc +%s)
-          gh workflow run \
-            --ref main \
-            --field unique_id=$this_id \
-            --field should_fail=false \
-            sleepy.yaml
-          run_id=''
-          jq_query=".[] | select(.name == \"sleepy ${this_id}\") | .databaseId"
-          for x in {1..15}; do
-            run_id=$(gh run list --workflow=sleepy.yaml --jq "${jq_query}" --json name,databaseId)
-            [ -n "$run_id" ] && break || sleep 2
-          done
-          gh run watch --exit-status --compact $run_id
-      - name: dispatch fail 
-        run: |-
-          set -x
-          this_id=$(date --utc +%s)
-          gh workflow run \
-            --ref main \
-            --field unique_id=$this_id \
-            --field should_fail=true \
-            sleepy.yaml
-          run_id=''
-          jq_query=".[] | select(.name == \"sleepy ${this_id}\") | .databaseId"
-          for x in {1..15}; do
-            run_id=$(gh run list --workflow=sleepy.yaml --jq "${jq_query}" --json name,databaseId)
-            [ -n "$run_id" ] && break || sleep 2
-          done
-          gh run watch --exit-status --compact $run_id
+  #dispatch:
+  #  needs: [call-remote-backports]
+  #  runs-on: ubuntu-latest
+  #  env:
+  #    GITHUB_TOKEN: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
+  #    # https://cli.github.com/manual/gh_help_environment
+  #    GH_REPO: gulducat/actions-tests-public
+  #  steps:
+  #    #- name: make an id
+  #    #  id: my-id
+  #    #  run: echo "id=$(date --utc +%s)" >> $GITHUB_OUTPUTS
+  #    - name: dispatch success
+  #      run: |-
+  #        set -x
+  #        this_id=$(date --utc +%s)
+  #        gh workflow run \
+  #          --ref main \
+  #          --field unique_id=$this_id \
+  #          --field should_fail=false \
+  #          sleepy.yaml
+  #        run_id=''
+  #        jq_query=".[] | select(.name == \"sleepy ${this_id}\") | .databaseId"
+  #        for x in {1..15}; do
+  #          run_id=$(gh run list --workflow=sleepy.yaml --jq "${jq_query}" --json name,databaseId)
+  #          [ -n "$run_id" ] && break || sleep 2
+  #        done
+  #        gh run watch --exit-status --compact $run_id
+  #    - name: dispatch fail
+  #      run: |-
+  #        set -x
+  #        this_id=$(date --utc +%s)
+  #        gh workflow run \
+  #          --ref main \
+  #          --field unique_id=$this_id \
+  #          --field should_fail=true \
+  #          sleepy.yaml
+  #        run_id=''
+  #        jq_query=".[] | select(.name == \"sleepy ${this_id}\") | .databaseId"
+  #        for x in {1..15}; do
+  #          run_id=$(gh run list --workflow=sleepy.yaml --jq "${jq_query}" --json name,databaseId)
+  #          [ -n "$run_id" ] && break || sleep 2
+  #        done
+  #        gh run watch --exit-status --compact $run_id
 
