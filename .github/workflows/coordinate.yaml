@@ -30,11 +30,18 @@ jobs:
   call-remote-main:
     needs: [start]
     if: ${{ inputs.latest_version != '' }}
+    strategy:
+      matrix:
+        stuff:
+          - repo: gulducat/actions-tests-public
+            version: ${{ inputs.latest_version }}
+          - repo: gulducat/actions-tests-private
+            version: ${{ inputs.latest_version }}+private
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     with:
-      repo: gulducat/actions-tests-public
+      repo: ${{ matrix.stuff.repo }}
       source_branch: main
-      dest_branch: ${{ inputs.latest_version }}
+      dest_branch: ${{ matrix.stuff.version }}
 
   call-remote-backports:
     needs: [start]
@@ -44,11 +51,11 @@ jobs:
           - repo: gulducat/actions-tests-public
             version: ${{ inputs.backport_1 }}
           - repo: gulducat/actions-tests-private
-            version: ${{ inputs.backport_1 }}
+            version: ${{ inputs.backport_1 }}+private
           - repo: gulducat/actions-tests-private
-            version: ${{ inputs.backport_2 }}
+            version: ${{ inputs.backport_2 }}+private
           - repo: gulducat/actions-tests-private
-            version: ${{ inputs.backport_3 }}
+            version: ${{ inputs.backport_3 }}+private
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
     with:
       repo: ${{ matrix.stuff.repo }}
