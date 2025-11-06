@@ -32,7 +32,6 @@ jobs:
     strategy:
       matrix:
         version: [inputs.backport_1, inputs.backport_2, inputs.backport_3]
-    if: ${{ matrix.version != '' }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
     with:
       repo: gulducat/actions-tests-public
