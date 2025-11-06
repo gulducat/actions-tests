@@ -7,10 +7,10 @@ on:
     inputs:
       ce: # format: [{"source": "main", "dest": "release/1.11.0"}]
         type: string
-        required: false
+        required: true # but can be empty []
       ent: # format: [{"source": "main", "dest": "release/1.11.0+ent"}]
         type: string
-        required: false
+        required: true
 
 jobs:
   start:
