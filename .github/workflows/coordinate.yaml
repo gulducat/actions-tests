@@ -21,7 +21,7 @@ jobs:
   call-remote-ce:
     needs: [start]
     strategy:
-      matrix: ${{ toJSON(inputs.ce) }}
+      matrix: ${{ fromJSON(inputs.ce) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
@@ -33,7 +33,7 @@ jobs:
   call-remote-ent:
     needs: [start]
     strategy:
-      matrix: ${{ toJSON(inputs.ent) }}
+      matrix: ${{ fromJSON(inputs.ent) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
