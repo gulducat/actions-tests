@@ -21,26 +21,28 @@ jobs:
   call-remote-ce:
     needs: [start]
     strategy:
-      matrix: ${{ fromJSON(inputs.ce) }}
+      matrix:
+        stuff: ${{ fromJSON(inputs.ce) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
     with:
       repo: gulducat/actions-tests-public
-      source_branch: ${{ matrix.source }}
-      dest_branch: ${{ matrix.dest }}
+      source_branch: ${{ matrix.stuff.source }}
+      dest_branch: ${{ matrix.stuff.dest }}
 
   call-remote-ent:
     needs: [start]
     strategy:
-      matrix: ${{ fromJSON(inputs.ent) }}
+      matrix:
+        stuff: ${{ fromJSON(inputs.ent) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
     with:
       repo: gulducat/actions-tests-private
-      source_branch: ${{ matrix.source }}
-      dest_branch: ${{ matrix.dest }}
+      source_branch: ${{ matrix.stuff.source }}
+      dest_branch: ${{ matrix.stuff.dest }}
 
   #dispatch:
   #  needs: [call-remote-backports]
