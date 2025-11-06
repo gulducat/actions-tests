@@ -5,10 +5,7 @@ on:
     branches: [cross-dispatch]
   workflow_dispatch:
     inputs:
-      ce: # format: [{"source": "main", "dest": "release/1.11.0"}]
-        type: string
-        required: true # but can be empty []
-      ent: # format: [{"source": "main", "dest": "release/1.11.0+ent"}]
+      json: # format: {"ce": [{"source": "main", "dest": "release/1.11.0"}], "ent": []}
         type: string
         required: true
 
@@ -17,12 +14,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo hi
+      - name: enter the matrix
+        id: matrix
+        run: |-
+          ce="$(jq '.ce // []' <<< "${{ fromJSON(inputs.json) }}")"
+          ent="$(jq '.ent // []' <<< "${{ fromJSON(inputs.json) }}")"
+          if [[ -z "$ce" && -z "$ent" ]]; then
+            echo 'found no "ce" nor "ent" in provided json'
+            exit 1
+          fi
+          echo "ce: $ce"
+          echo "ent: $ent"
+          cat <<EOF >> "$GITHUB_OUTPUTS"
+          ce="$ce"
+          ent="$ent"
+          EOF
 
   call-remote-ce:
     needs: [start]
     strategy:
       matrix:
-        stuff: ${{ fromJSON(inputs.ce) }}
+        stuff: ${{ fromJSON(jobs.start.outputs.ce) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
@@ -35,7 +47,7 @@ jobs:
     needs: [start]
     strategy:
       matrix:
-        stuff: ${{ fromJSON(inputs.ent) }}
+        stuff: ${{ fromJSON(jobs.start.outputs.ent) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
