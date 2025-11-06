@@ -5,10 +5,12 @@ on:
     branches: [cross-dispatch]
   workflow_dispatch:
     inputs:
-      # TODO: parse .release/versions.hcl ??
-      json: # format: {"ce": [{"source": "main", "dest": "release/1.11.0"}], "ent": []}
+      ce: # format: [{"source": "main", "dest": "release/1.11.0"}]
         type: string
-        required: true
+        required: false
+      ent: # format: [{"source": "main", "dest": "release/1.11.0+ent"}]
+        type: string
+        required: false
 
 jobs:
   start:
@@ -19,7 +21,7 @@ jobs:
   call-remote-ce:
     needs: [start]
     strategy:
-      matrix: ${{ toJSON(inputs.json)["ce"] }}
+      matrix: ${{ toJSON(inputs.ce) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
@@ -31,7 +33,7 @@ jobs:
   call-remote-ent:
     needs: [start]
     strategy:
-      matrix: ${{ toJSON(inputs.json)["ent"] }}
+      matrix: ${{ toJSON(inputs.ent) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
