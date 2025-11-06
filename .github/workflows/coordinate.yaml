@@ -5,18 +5,10 @@ on:
     branches: [cross-dispatch]
   workflow_dispatch:
     inputs:
-      latest_version: # targets main
+      # TODO: parse .release/versions.hcl ??
+      json: # format: {"ce": [{"source": "main", "dest": "release/1.11.0"}], "ent": []}
         type: string
-        required: false
-      backport_1: # targets current latest release branch
-        type: string
-        required: false
-      backport_2: # targets a backport branch
-        type: string
-        required: false
-      backport_3: # ditto
-        type: string
-        required: false
+        required: true
 
 jobs:
   start:
@@ -24,44 +16,29 @@ jobs:
     steps:
       - run: echo hi
 
-  call-remote-main:
+  call-remote-ce:
     needs: [start]
-    if: ${{ inputs.latest_version != '' }}
     strategy:
-      matrix:
-        stuff:
-          - version: ${{ inputs.latest_version }}
-            repo: gulducat/actions-tests-public
-          - version: ${{ inputs.latest_version }}+private
-            repo: gulducat/actions-tests-private
+      matrix: ${{ toJSON(inputs.json)["ce"] }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
     with:
-      repo: ${{ matrix.stuff.repo }}
-      source_branch: main
-      dest_branch: ${{ matrix.stuff.version }}
+      repo: gulducat/actions-tests-public
+      source_branch: ${{ matrix.source }}
+      dest_branch: ${{ matrix.dest }}
 
-  call-remote-backports:
+  call-remote-ent:
     needs: [start]
     strategy:
-      matrix:
-        stuff:
-          - version: ${{ inputs.backport_1 }}
-            repo: gulducat/actions-tests-public
-          - version: ${{ inputs.backport_1 }}+private
-            repo: gulducat/actions-tests-private
-          - version: ${{ inputs.backport_2 }}+private
-            repo: gulducat/actions-tests-private
-          - version: ${{ inputs.backport_3 }}+private
-            repo: gulducat/actions-tests-private
-    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
+      matrix: ${{ toJSON(inputs.json)["ent"] }}
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
     with:
-      repo: ${{ matrix.stuff.repo }}
-      source_branch: ${{ matrix.stuff.version }}
-      dest_branch: ${{ matrix.version.version }}
+      repo: gulducat/actions-tests-private
+      source_branch: ${{ matrix.source }}
+      dest_branch: ${{ matrix.dest }}
 
   #dispatch:
   #  needs: [call-remote-backports]
