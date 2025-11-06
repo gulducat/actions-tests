@@ -31,7 +31,7 @@ jobs:
     with:
       repo: gulducat/actions-tests-public
       source_branch: main
-      dest_branch: ${{ inputs.latest_version != '' }}
+      dest_branch: ${{ inputs.latest_version }}
 
   call-remote-backports:
     needs: [start]
