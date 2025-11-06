@@ -31,7 +31,7 @@ jobs:
     with:
       repo: gulducat/actions-tests-public
       source_branch: main
-      dest_branch: release/${{ inputs.latest_version != '' }}
+      dest_branch: ${{ inputs.latest_version != '' }}
 
   call-remote-backports:
     needs: [start]
@@ -44,8 +44,8 @@ jobs:
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
     with:
       repo: gulducat/actions-tests-public
-      source_branch: release/${{ matrix.version }}
-      dest_branch: release/${{ matrix.version }}
+      source_branch: ${{ matrix.version }}
+      dest_branch: ${{ matrix.version }}
 
   #dispatch:
   #  needs: [call-remote-backports]
