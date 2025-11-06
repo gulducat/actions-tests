@@ -4,9 +4,43 @@ on:
   push:
     branches: [cross-dispatch]
   workflow_dispatch:
+    inputs:
+      latest_version: # targets main
+        type: string
+        required: false
+      backport_1: # targets current latest release branch
+        type: string
+        required: false
+      backport_2: # targets a backport branch
+        type: string
+        required: false
+      backport_3: # ditto
+        type: string
+        required: false
 
 jobs:
+  call-remote-main:
+    if: ${{ inputs.latest_version != '' }}
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
+    with:
+      repo: gulducat/actions-tests-public
+      source_branch: main
+      dest_branch: release/${{ inputs.latest_version != '' }}
+
+  call-remote-backports:
+    needs: [call-remote-main]
+    strategy:
+      matrix:
+        version: [inputs.backport_1, inputs.backport_2, inputs.backport_3]
+    if: ${{ matrix.version != '' }}
+    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
+    with:
+      repo: gulducat/actions-tests-public
+      source_branch: release/${{ matrix.version }}
+      dest_branch: release/${{ matrix.version }}
+
   dispatch:
+    needs: [call-remote-backports]
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
@@ -48,16 +82,4 @@ jobs:
             [ -n "$run_id" ] && break || sleep 2
           done
           gh run watch --exit-status --compact $run_id
-
-  call-remote-success:
-    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
-    with:
-      repo: gulducat/actions-tests-public
-      should_fail: false
-  call-remote-fail:
-    needs: [call-remote-success]
-    uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
-    with:
-      repo: gulducat/actions-tests-public
-      should_fail: true
 
