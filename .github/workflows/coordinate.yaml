@@ -5,39 +5,27 @@ on:
   #  branches: [cross-dispatch]
   workflow_dispatch:
     inputs:
-      json: # format: {"ce": [{"source": "main", "dest": "release/1.11.0"}], "ent": []}
+      #json: # format: {"ce": [{"source": "main", "dest": "release/1.11.0"}], "ent": []}
+      #  type: string
+      #  required: true
+      ce: # format: [{"source": "main", "dest": "release/1.11.0"}]
+        type: string
+        required: true
+      ent: # format: [{"source": "main", "dest": "release/1.11.0+ent"}]
         type: string
         required: true
 
 jobs:
   start:
     runs-on: ubuntu-latest
-    outputs:
-      ce: ${{ steps.set-matrix.outputs.ce }}
-      ent: ${{ steps.set-matrix.outputs.ent }}
     steps:
-      - name: enter the matrix
-        id: set-matrix
-        run: |-
-          echo "inputs.json: '${{ inputs.json) }}'"
-          ce="$(jq '.ce // []' <<< '${{ inputs.json }}')"
-          ent="$(jq '.ent // []' <<< '${{ inputs.json }}')"
-          if [[ -z "$ce" && -z "$ent" ]]; then
-            echo 'found no "ce" nor "ent" in provided json'
-            exit 1
-          fi
-          echo "ce: $ce"
-          echo "ent: $ent"
-          cat <<EOF >> "$GITHUB_OUTPUTS"
-          ce="$ce"
-          ent="$ent"
-          EOF
+      - run: echo hi
 
   call-remote-ce:
     needs: [start]
     strategy:
       matrix:
-        stuff: ${{ fromJSON(needs.jobs.start.outputs.ce) }}
+        stuff: ${{ fromJSON(inputs.ce) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
@@ -50,7 +38,7 @@ jobs:
     needs: [start]
     strategy:
       matrix:
-        stuff: ${{ fromJSON(needs.jobs.start.outputs.ent) }}
+        stuff: ${{ fromJSON(inputs.ent) }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main # remote repo
     secrets:
       gh_token: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
