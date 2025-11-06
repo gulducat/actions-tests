@@ -18,6 +18,9 @@ on:
         type: string
         required: false
 
+env:
+  GITHUB_TOKEN: ${{ secrets.ELEVATED_GITHUB_TOKEN }}
+
 jobs:
   start:
     runs-on: ubuntu-latest
@@ -37,15 +40,20 @@ jobs:
     needs: [start]
     strategy:
       matrix:
-        version:
-          - ${{ inputs.backport_1 }}
-          - ${{ inputs.backport_2 }}
-          - ${{ inputs.backport_3 }}
+        stuff:
+          - repo: gulducat/actions-tests-public
+            version: ${{ inputs.backport_1 }}
+          - repo: gulducat/actions-tests-private
+            version: ${{ inputs.backport_1 }}
+          - repo: gulducat/actions-tests-private
+            version: ${{ inputs.backport_2 }}
+          - repo: gulducat/actions-tests-private
+            version: ${{ inputs.backport_3 }}
     uses: gulducat/actions-tests-public/.github/workflows/sleepy.yaml@main
     with:
-      repo: gulducat/actions-tests-public
-      source_branch: ${{ matrix.version }}
-      dest_branch: ${{ matrix.version }}
+      repo: ${{ matrix.stuff.repo }}
+      source_branch: ${{ matrix.stuff.version }}
+      dest_branch: ${{ matrix.version.version }}
 
   #dispatch:
   #  needs: [call-remote-backports]
