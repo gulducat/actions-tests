@@ -1,5 +1,11 @@
 name: coordinate
 
+# gh workflow run \
+#   --repo=gulducat/actions-tests \
+#   --ref=cross-dispatch coordinate.yaml \
+#   --field "ce=$(jq .ce json.json)" \
+#   --field "ent=$(jq .ent json.json)"
+
 on:
   #push:
   #  branches: [cross-dispatch]
@@ -19,7 +25,10 @@ jobs:
   start:
     runs-on: ubuntu-latest
     steps:
-      - run: echo hi
+      - name: show inputs
+        run: |-
+          echo "ce='${{ inputs.ce }}'"
+          echo "ent='${{ inputs.ent }}'"
 
   call-remote-ce:
     needs: [start]
@@ -46,6 +55,19 @@ jobs:
       repo: gulducat/actions-tests-private
       source_branch: ${{ matrix.stuff.source }}
       dest_branch: ${{ matrix.stuff.dest }}
+
+  finish:
+    needs:
+      - call-remote-ce
+      - call-remote-ent
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ${{ needs.*.outputs.version }}
+    steps:
+      - name: done
+        run: |-
+          echo 'all done: ${{ matrix.version }}'
 
   #dispatch:
   #  needs: [call-remote-backports]
