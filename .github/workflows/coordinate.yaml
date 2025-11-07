@@ -97,11 +97,11 @@ jobs:
       - name: run success
         run: |-
           id="$(date --utc +%s)"
-          run sleepy.yaml ".[] | select(.displayTitle == \"sleepy $id\")" --field "unique_id=$id"
+          ./run-and-watch.sh sleepy.yaml "$id" --field "unique_id=$id"
       - name: run fail
         run: |-
           id="$(date --utc +%s)"
-          run sleepy.yaml ".[] | select(.displayTitle == \"sleepy $id\")" --field "unique_id=$id" --field should_fail=true
+          ./run-and-watch.sh sleepy.yaml "$id" --field "unique_id=$id" --field should_fail=true
 
   #dispatch:
   #  needs: [call-remote-backports]
