@@ -23,7 +23,7 @@ function run() {
   done
   
   echo 'watch the run'
-  gh run watch --interval 3 --exit-status $(jq -r '.databaseId' < run.json)
+  gh run watch --compact --interval 3 --exit-status $(jq -r '.databaseId' < run.json)
 }
 
 run "$@"
