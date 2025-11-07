@@ -1,5 +1,6 @@
 name: coordinate
 
+run-name: coordinate ${{ inputs.unique_id }}
 # gh workflow run \
 #   --repo=gulducat/actions-tests \
 #   --ref=cross-dispatch coordinate.yaml \
@@ -11,6 +12,9 @@ on:
   #  branches: [cross-dispatch]
   workflow_dispatch:
     inputs:
+      unique_id:
+        type: string
+        required: false
       #json: # format: {"ce": [{"source": "main", "dest": "release/1.11.0"}], "ent": []}
       #  type: string
       #  required: true
