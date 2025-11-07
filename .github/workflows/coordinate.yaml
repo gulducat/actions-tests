@@ -42,6 +42,7 @@ jobs:
       repo: gulducat/actions-tests-public
       source_branch: ${{ matrix.stuff.source }}
       dest_branch: ${{ matrix.stuff.dest }}
+      prev_version: ${{ matrix.stuff.prev }}
 
   call-remote-ent:
     needs: [start]
@@ -55,6 +56,7 @@ jobs:
       repo: gulducat/actions-tests-private
       source_branch: ${{ matrix.stuff.source }}
       dest_branch: ${{ matrix.stuff.dest }}
+      prev_version: ${{ matrix.stuff.prev }}
 
   finish:
     needs:
@@ -75,8 +77,8 @@ jobs:
           path: ./artifacts
       - name: show artifacts
         run: |-
-          find ./artifacts
           tree ./artifacts
+          cat ./artifacts/*/*
       - name: done
         run: |-
           echo 'all done: ${{ matrix.version }}'
