@@ -61,10 +61,22 @@ jobs:
       - call-remote-ce
       - call-remote-ent
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        version: ${{ needs.*.outputs.version }}
+    #strategy:
+    #  matrix:
+    #    # https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows#using-outputs-from-a-reusable-workflow
+    #    # If a reusable workflow that sets an output is executed with a matrix strategy, the output will be the output set by the last successful completing reusable workflow of the matrix which actually sets a value.
+    #    # so, TODO: artifacts instead of outputs? they're not sensitive...
+    #    version: ${{ needs.*.outputs.version }}
     steps:
+      - name: pull artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: sleepy-*
+          path: ./artifacts
+      - name: show artifacts
+        run: |-
+          find ./artifacts
+          tree ./artifacts
       - name: done
         run: |-
           echo 'all done: ${{ matrix.version }}'
